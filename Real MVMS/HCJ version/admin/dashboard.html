@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVMS - Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="flex h-screen overflow-hidden bg-background">
+        <!-- Mobile overlay -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-20 lg:hidden hidden" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-30 w-64 flex flex-col transition-transform duration-300 lg:translate-x-0 -translate-x-full" style="background: var(--gradient-sidebar);">
+            <!-- Logo -->
+            <div class="flex items-center justify-between p-5 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center">
+                        <i data-lucide="store" class="text-white" style="width: 20px; height: 20px;"></i>
+                    </div>
+                    <div>
+                        <p class="text-white font-bold text-sm leading-tight">MVMS</p>
+                        <p class="text-white/50 text-xs">Mbarara City</p>
+                    </div>
+                </div>
+                <button class="lg:hidden text-white/60 hover:text-white" onclick="toggleSidebar()">
+                    <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                </button>
+            </div>
+
+            <!-- User info -->
+            <div class="px-4 py-4 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0" style="background: hsl(var(--accent)); color: hsl(var(--accent-foreground));" id="userAvatar">J</div>
+                    <div class="min-w-0">
+                        <p class="text-white text-sm font-semibold truncate" id="userName">John Mugisha</p>
+                        <span class="text-xs px-1.5 py-0.5 rounded font-medium" style="background: hsl(var(--accent) / 0.25); color: hsl(var(--accent));">Administrator</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+                <button class="nav-item w-full text-left active" data-tab="overview" onclick="switchTab('overview'); toggleSidebar();">
+                    <i data-lucide="layout-dashboard" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Overview</span>
+                </button>
+                <button class="nav-item w-full text-left" data-tab="vendors" onclick="switchTab('vendors'); toggleSidebar();">
+                    <i data-lucide="users" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Vendor Management</span>
+                    <span class="text-xs px-1.5 py-0.5 rounded-full font-bold min-w-[20px] text-center" style="background: hsl(var(--destructive)); color: white;" id="pendingBadge">0</span>
+                </button>
+                <button class="nav-item w-full text-left" data-tab="stalls" onclick="switchTab('stalls'); toggleSidebar();">
+                    <i data-lucide="building" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Stall Management</span>
+                </button>
+                <button class="nav-item w-full text-left" data-tab="payments" onclick="switchTab('payments'); toggleSidebar();">
+                    <i data-lucide="credit-card" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Payments</span>
+                    <span class="text-xs px-1.5 py-0.5 rounded-full font-bold min-w-[20px] text-center" style="background: hsl(var(--destructive)); color: white;" id="paymentBadge">0</span>
+                </button>
+                <button class="nav-item w-full text-left" data-tab="compliance" onclick="switchTab('compliance'); toggleSidebar();">
+                    <i data-lucide="shield-alert" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Compliance</span>
+                    <span class="text-xs px-1.5 py-0.5 rounded-full font-bold min-w-[20px] text-center" style="background: hsl(var(--destructive)); color: white;" id="complianceBadge">0</span>
+                </button>
+                <button class="nav-item w-full text-left" data-tab="reports" onclick="switchTab('reports'); toggleSidebar();">
+                    <i data-lucide="file-text" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Financial Reports</span>
+                </button>
+                <button class="nav-item w-full text-left" data-tab="announcements" onclick="switchTab('announcements'); toggleSidebar();">
+                    <i data-lucide="megaphone" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Announcements</span>
+                </button>
+            </nav>
+
+            <!-- Logout -->
+            <div class="p-3 border-t border-white/10">
+                <button id="logoutBtn" class="nav-item w-full text-left hover:bg-red-500/20" style="color: hsl(0 80% 75%);" onclick="logout()">
+                    <i data-lucide="log-out" style="width: 17px; height: 17px;"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <!-- Top bar -->
+            <header class="flex items-center justify-between px-5 py-3.5 border-b bg-card flex-shrink-0" style="box-shadow: var(--shadow-sm);">
+                <div class="flex items-center gap-3">
+                    <button class="lg:hidden text-muted-foreground hover:text-foreground" onclick="toggleSidebar()">
+                        <i data-lucide="menu" style="width: 22px; height: 22px;"></i>
+                    </button>
+                    <div class="flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <span class="font-medium text-foreground">Admin Dashboard</span>
+                        <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
+                        <span id="activeTabLabel">Overview</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="relative text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted transition-colors">
+                        <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+                        <span class="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center text-white" style="background: hsl(var(--destructive));">3</span>
+                    </button>
+                    <div class="flex items-center gap-2 pl-3 border-l border-border">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: hsl(var(--primary)); color: white;" id="headerAvatar">J</div>
+                        <div class="hidden sm:block">
+                            <p class="text-sm font-semibold text-foreground leading-tight" id="headerUserName">John Mugisha</p>
+                            <p class="text-xs text-muted-foreground">ADM001</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page content -->
+            <main class="flex-1 overflow-y-auto p-5 lg:p-6 animate-fade-in">
+                <!-- Tab Content Container -->
+                <div id="tabContent">
+            <!-- Overview Tab -->
+            <div id="overviewTab" class="tab-content active">
+                <div class="space-y-6">
+                    <div class="page-header">
+                        <div>
+                            <h2 class="page-title">Dashboard Overview</h2>
+                            <p class="text-sm text-muted-foreground">Mbarara City Market — Real-time summary</p>
+                        </div>
+                        <span class="text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-lg" id="currentDate">
+                            Loading...
+                        </span>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <div class="stat-card bg-primary/5 border-primary/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-primary" id="activeVendors">0</p>
+                                    <p class="text-sm text-muted-foreground">Active Vendors</p>
+                                    <p class="text-xs text-muted-foreground mt-1" id="pendingCount">0 pending approval</p>
+                                </div>
+                                <i data-lucide="users" class="text-primary" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card bg-info/5 border-info/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-info" id="occupiedStalls">0/0</p>
+                                    <p class="text-sm text-muted-foreground">Stalls Occupied</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Across all blocks</p>
+                                </div>
+                                <i data-lucide="store" class="text-info" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card bg-success/5 border-success/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-success" id="totalRevenue">UGX 0M</p>
+                                    <p class="text-sm text-muted-foreground">Total Revenue</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Verified payments</p>
+                                </div>
+                                <i data-lucide="trending-up" class="text-success" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card bg-destructive/5 border-destructive/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-destructive" id="nonCompliant">0</p>
+                                    <p class="text-sm text-muted-foreground">Non-Compliant</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Documents expired</p>
+                                </div>
+                                <i data-lucide="shield-alert" class="text-destructive" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Approvals -->
+                    <div class="section-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-foreground flex items-center gap-2">
+                                <i data-lucide="clock" class="text-warning" style="width: 18px; height: 18px;"></i>
+                                <span>Pending Vendor Approvals</span>
+                                <span class="badge-warning" id="pendingBadge">0</span>
+                            </h3>
+                            <button class="text-xs text-primary hover:underline font-medium" onclick="switchTab('vendors')">
+                                View All Vendors →
+                            </button>
+                        </div>
+                        <div id="pendingApprovals" class="space-y-3">
+                            <!-- Pending approvals will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Payments -->
+                    <div class="section-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-foreground flex items-center gap-2">
+                                <i data-lucide="credit-card" class="text-info" style="width: 18px; height: 18px;"></i>
+                                Recent Payments
+                            </h3>
+                            <button class="text-xs text-primary hover:underline font-medium" onclick="switchTab('payments')">
+                                View All →
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Vendor</th>
+                                        <th>Stall</th>
+                                        <th>Amount</th>
+                                        <th class="hidden sm:table-cell">Method</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentPayments">
+                                    <!-- Recent payments will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other tabs will be added here -->
+            <div id="vendorsTab" class="tab-content">
+                <div class="space-y-5">
+                    <div class="page-header">
+                        <div>
+                            <h2 class="page-title">Vendor Management</h2>
+                            <p class="text-sm text-muted-foreground">Manage and approve vendor registrations</p>
+                        </div>
+                        <button class="btn-primary" onclick="showAddVendorModal()">
+                            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                            Add Vendor
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="p-3 rounded-xl border border-border bg-card hover:border-primary/40 cursor-pointer transition-all" onclick="filterVendors('all')">
+                            <p class="text-lg font-bold text-foreground" id="totalVendors">0</p>
+                            <p class="text-xs text-muted-foreground">All Vendors</p>
+                        </div>
+                        <div class="p-3 rounded-xl border border-border bg-card hover:border-primary/40 cursor-pointer transition-all" onclick="filterVendors('approved')">
+                            <p class="text-lg font-bold text-foreground" id="approvedVendors">0</p>
+                            <p class="text-xs text-muted-foreground">Approved</p>
+                        </div>
+                        <div class="p-3 rounded-xl border border-border bg-card hover:border-primary/40 cursor-pointer transition-all" onclick="filterVendors('pending')">
+                            <p class="text-lg font-bold text-foreground" id="pendingVendors">0</p>
+                            <p class="text-xs text-muted-foreground">Pending</p>
+                        </div>
+                        <div class="p-3 rounded-xl border border-border bg-card hover:border-primary/40 cursor-pointer transition-all" onclick="filterVendors('rejected')">
+                            <p class="text-lg font-bold text-foreground" id="rejectedVendors">0</p>
+                            <p class="text-xs text-muted-foreground">Rejected</p>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" style="width: 16px; height: 16px;"></i>
+                        <input type="text" class="form-input pl-9" placeholder="Search by name, business, or ID…" oninput="searchVendors(this.value)">
+                    </div>
+
+                    <div class="section-card overflow-x-auto p-0">
+                        <table class="w-full text-sm">
+                            <thead class="bg-muted/60">
+                                <tr>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase">Vendor</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase hidden md:table-cell">Business</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase hidden sm:table-cell">Stall</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase">Status</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase hidden lg:table-cell">Compliance</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vendorsTableBody">
+                                <!-- Vendors will be loaded here -->
+                            </tbody>
+                        </table>
+                        <div id="noVendorsMessage" class="text-center text-muted-foreground py-8 text-sm hidden">No vendors found</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stallsTab" class="tab-content">
+                <div class="space-y-5">
+                    <div class="page-header">
+                        <div>
+                            <h2 class="page-title">Stall Management</h2>
+                            <p class="text-sm text-muted-foreground">Manage market stalls and availability</p>
+                        </div>
+                        <button class="btn-primary" onclick="showAddStallModal()">
+                            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                            Add Stall
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-4 py-2 rounded-xl text-sm font-medium border transition-all active-filter" onclick="filterStalls('all')">All (0)</button>
+                        <button class="px-4 py-2 rounded-xl text-sm font-medium border transition-all" onclick="filterStalls('available')">Available (0)</button>
+                        <button class="px-4 py-2 rounded-xl text-sm font-medium border transition-all" onclick="filterStalls('occupied')">Occupied (0)</button>
+                        <button class="px-4 py-2 rounded-xl text-sm font-medium border transition-all" onclick="filterStalls('maintenance')">Maintenance (0)</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="stallsGrid">
+                        <!-- Stalls will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="paymentsTab" class="tab-content">
+                <div class="space-y-5">
+                    <div class="page-header">
+                        <div>
+                            <h2 class="page-title">Payment Management</h2>
+                            <p class="text-sm text-muted-foreground">Track and verify vendor payments</p>
+                        </div>
+                        <button class="btn-outline" onclick="window.print()">
+                            <i data-lucide="printer" style="width: 15px; height: 15px;"></i>
+                            Print Report
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="stat-card bg-success/5 border-success/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-success" id="totalRevenue">UGX 0M</p>
+                                    <p class="text-sm text-muted-foreground">Total Verified Revenue</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Verified payments</p>
+                                </div>
+                                <i data-lucide="credit-card" class="text-success" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card bg-warning/5 border-warning/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-warning" id="pendingPayments">0</p>
+                                    <p class="text-sm text-muted-foreground">Pending Verification</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Awaiting approval</p>
+                                </div>
+                                <i data-lucide="clock" class="text-warning" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card bg-primary/5 border-primary/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-primary" id="verifiedPayments">0</p>
+                                    <p class="text-sm text-muted-foreground">Verified Payments</p>
+                                    <p class="text-xs text-muted-foreground mt-1">This month</p>
+                                </div>
+                                <i data-lucide="check-circle" class="text-primary" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all active-filter" onclick="filterPayments('all')">All (0)</button>
+                        <button class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all" onclick="filterPayments('verified')">Verified (0)</button>
+                        <button class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all" onclick="filterPayments('pending')">Pending (0)</button>
+                        <button class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all" onclick="filterPayments('failed')">Failed (0)</button>
+                    </div>
+
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" style="width: 16px; height: 16px;"></i>
+                        <input type="text" class="form-input pl-9" placeholder="Search by vendor name, payment ID, or stall…" oninput="searchPayments(this.value)">
+                    </div>
+
+                    <div class="section-card overflow-x-auto p-0">
+                        <table class="w-full text-sm">
+                            <thead class="bg-muted/60">
+                                <tr>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase">Payment ID</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase">Vendor</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase">Stall</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase">Amount</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase hidden md:table-cell">Method</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase hidden sm:table-cell">Date</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase">Status</th>
+                                    <th class="text-left py-3 px-4 text-muted-foreground font-semibold text-xs uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTableBody">
+                                <!-- Payments will be loaded here -->
+                            </tbody>
+                        </table>
+                        <div id="noPaymentsMessage" class="text-center text-muted-foreground py-8 text-sm hidden">No payments found</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="complianceTab" class="tab-content">
+                <div class="space-y-5">
+                    <div class="page-header">
+                        <div>
+                            <h2 class="page-title">Compliance Tracking</h2>
+                            <p class="text-sm text-muted-foreground">Monitor vendor document compliance</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="stat-card bg-success/5 border-success/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-success" id="compliantVendors">0</p>
+                                    <p class="text-sm text-muted-foreground">Compliant Vendors</p>
+                                    <p class="text-xs text-muted-foreground mt-1">All documents valid</p>
+                                </div>
+                                <i data-lucide="check-circle" class="text-success" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card bg-warning/5 border-warning/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-warning" id="expiringVendors">0</p>
+                                    <p class="text-sm text-muted-foreground">Expiring Soon</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Documents need renewal</p>
+                                </div>
+                                <i data-lucide="alert-triangle" class="text-warning" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card bg-destructive/5 border-destructive/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-destructive" id="nonCompliantVendors">0</p>
+                                    <p class="text-sm text-muted-foreground">Non-Compliant</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Documents expired</p>
+                                </div>
+                                <i data-lucide="shield-alert" class="text-destructive" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <h3 class="font-bold text-foreground mb-4">Vendor Compliance Status</h3>
+                        <div id="complianceList" class="space-y-3">
+                            <!-- Compliance status will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reportsTab" class="tab-content">
+                <div class="space-y-5">
+                    <div class="page-header">
+                        <div>
+                            <h2 class="page-title">Financial Reports</h2>
+                            <p class="text-sm text-muted-foreground">Revenue and payment analytics</p>
+                        </div>
+                        <button class="btn-primary" onclick="window.print()">
+                            <i data-lucide="printer" style="width: 16px; height: 16px;"></i>
+                            Print Report
+                        </button>
+                    </div>
+
+                    <div class="flex gap-2 border-b border-border pb-1 overflow-x-auto">
+                        <button class="px-4 py-2 text-sm font-medium border-b-2 transition-all active-tab" onclick="switchReportType('daily')">Daily Revenue</button>
+                        <button class="px-4 py-2 text-sm font-medium border-b-2 transition-all" onclick="switchReportType('vendor')">Vendor Payments</button>
+                        <button class="px-4 py-2 text-sm font-medium border-b-2 transition-all" onclick="switchReportType('monthly')">Monthly Summary</button>
+                    </div>
+
+                    <div id="dailyReport" class="report-content active">
+                        <div class="space-y-5">
+                            <div class="section-card">
+                                <h3 class="font-bold mb-3 text-foreground">Daily Revenue Report — <span id="reportDate"></span></h3>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                                    <div class="p-3 rounded-xl bg-muted/50 text-center">
+                                        <p class="text-xl font-bold text-success" id="dailyTotalRevenue">UGX 0</p>
+                                        <p class="text-xs text-muted-foreground">Total Revenue</p>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-muted/50 text-center">
+                                        <p class="text-xl font-bold text-primary" id="dailyVerifiedPayments">0</p>
+                                        <p class="text-xs text-muted-foreground">Verified Payments</p>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-muted/50 text-center">
+                                        <p class="text-xl font-bold text-warning" id="dailyPendingPayments">0</p>
+                                        <p class="text-xs text-muted-foreground">Pending</p>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-muted/50 text-center">
+                                        <p class="text-xl font-bold text-info" id="dailyTotalBookings">0</p>
+                                        <p class="text-xs text-muted-foreground">Total Bookings</p>
+                                    </div>
+                                </div>
+                                <h4 class="font-semibold text-sm mb-3 text-foreground">Revenue by Payment Method</h4>
+                                <div id="paymentMethodsChart" class="space-y-2">
+                                    <!-- Payment methods will be loaded here -->
+                                </div>
+                            </div>
+                            <div class="section-card">
+                                <h4 class="font-semibold mb-3 text-foreground">All Verified Payments</h4>
+                                <div id="verifiedPaymentsList" class="space-y-2">
+                                    <!-- Verified payments will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="vendorReport" class="report-content">
+                        <div class="section-card">
+                            <h3 class="font-bold mb-4 text-foreground">Vendor Payment History Report</h3>
+                            <div id="vendorPaymentsReport" class="space-y-4">
+                                <!-- Vendor payments will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="monthlyReport" class="report-content">
+                        <div class="space-y-4">
+                            <div class="section-card">
+                                <h3 class="font-bold mb-4 text-foreground">Monthly Summary — March 2025</h3>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                    <div class="p-4 rounded-xl bg-muted/50 text-center">
+                                        <p class="text-xl font-bold text-success" id="monthlyRevenue">UGX 0</p>
+                                        <p class="text-xs text-muted-foreground mt-1">Total Monthly Revenue</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-muted/50 text-center">
+                                        <p class="text-xl font-bold text-primary" id="monthlyBookings">0</p>
+                                        <p class="text-xs text-muted-foreground mt-1">Total Bookings</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-muted/50 text-center">
+                                        <p class="text-xl font-bold text-info" id="monthlyActiveVendors">0</p>
+                                        <p class="text-xs text-muted-foreground mt-1">Active Vendors</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-muted/50 text-center">
+                                        <p class="text-xl font-bold text-warning" id="monthlyAvailableStalls">0</p>
+                                        <p class="text-xs text-muted-foreground mt-1">Available Stalls</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-muted/50 text-center">
+                                        <p class="text-xl font-bold text-foreground" id="monthlyAvgRevenue">UGX 0</p>
+                                        <p class="text-xs text-muted-foreground mt-1">Avg. Daily Revenue</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-muted/50 text-center">
+                                        <p class="text-xl font-bold text-destructive" id="monthlyNonCompliant">0</p>
+                                        <p class="text-xs text-muted-foreground mt-1">Non-Compliant</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="section-card">
+                                <h4 class="font-bold mb-3 text-foreground">Top Stalls by Bookings</h4>
+                                <div id="topStallsList" class="space-y-2.5">
+                                    <!-- Top stalls will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="announcementsTab" class="tab-content">
+                <div class="space-y-5">
+                    <div class="page-header">
+                        <div>
+                            <h2 class="page-title">Announcements</h2>
+                            <p class="text-sm text-muted-foreground">Send notices to all vendors</p>
+                        </div>
+                        <button class="btn-primary" onclick="showNewAnnouncementModal()">
+                            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                            New Announcement
+                        </button>
+                    </div>
+
+                    <div id="announcementsList" class="space-y-4">
+                        <!-- Announcements will be loaded here -->
+                    </div>
+                    <div id="noAnnouncementsMessage" class="section-card text-center py-10 hidden">
+                        <i data-lucide="megaphone" class="text-muted-foreground mx-auto mb-3" style="width: 32px; height: 32px;"></i>
+                        <p class="text-muted-foreground text-sm">No announcements yet. Create one to notify all vendors.</p>
+                    </div>
+                </div>
+            </div>
+                <p>Announcements functionality coming soon...</p>
+            </div>
+
+            <div id="complianceTab" class="tab-content">
+                <h2 class="page-title">Compliance</h2>
+                <p>Compliance functionality coming soon...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Modals -->
+    <div id="modalOverlay" class="modal-overlay hidden">
+        <div id="modalContent" class="modal-content">
+            <!-- Modal content will be inserted here -->
+        </div>
+    </div>
+    <script>
+        // Sidebar toggle functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Update active tab in sidebar
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // Update header breadcrumb
+            const tabLabels = {
+                'overview': 'Overview',
+                'vendors': 'Vendor Management',
+                'stalls': 'Stall Management',
+                'payments': 'Payments',
+                'compliance': 'Compliance',
+                'reports': 'Financial Reports',
+                'announcements': 'Announcements'
+            };
+            document.getElementById('activeTabLabel').textContent = tabLabels[tabName] || tabName;
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>    <script src="../js/admin.js"></script>
+</body>
+</html>

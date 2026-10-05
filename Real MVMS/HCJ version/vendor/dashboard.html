@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVMS - Vendor Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="flex h-screen overflow-hidden bg-background">
+        <!-- Mobile overlay -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-20 lg:hidden hidden" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-30 w-64 flex flex-col transition-transform duration-300 lg:translate-x-0 -translate-x-full" style="background: var(--gradient-sidebar);">
+            <!-- Logo -->
+            <div class="flex items-center justify-between p-5 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center">
+                        <i data-lucide="store" class="text-white" style="width: 20px; height: 20px;"></i>
+                    </div>
+                    <div>
+                        <p class="text-white font-bold text-sm leading-tight">MVMS</p>
+                        <p class="text-white/50 text-xs">Mbarara City</p>
+                    </div>
+                </div>
+                <button class="lg:hidden text-white/60 hover:text-white" onclick="toggleSidebar()">
+                    <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                </button>
+            </div>
+
+            <!-- User info -->
+            <div class="px-4 py-4 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0" style="background: hsl(152 50% 40% / 0.4); color: hsl(142 60% 70%);" id="userAvatar">S</div>
+                    <div class="min-w-0">
+                        <p class="text-white text-sm font-semibold truncate" id="userName">Sarah Nakato</p>
+                        <span class="text-xs px-1.5 py-0.5 rounded font-medium" style="background: hsl(152 50% 40% / 0.4); color: hsl(142 60% 70%);">Vendor</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+                <button class="nav-item w-full text-left active" data-tab="overview" onclick="switchTab('overview'); toggleSidebar();">
+                    <i data-lucide="layout-dashboard" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Dashboard</span>
+                </button>
+                <button class="nav-item w-full text-left" data-tab="bookings" onclick="switchTab('bookings'); toggleSidebar();">
+                    <i data-lucide="calendar-days" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">My Bookings</span>
+                </button>
+                <button class="nav-item w-full text-left" data-tab="payments" onclick="switchTab('payments'); toggleSidebar();">
+                    <i data-lucide="credit-card" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Payment History</span>
+                </button>
+                <button class="nav-item w-full text-left" data-tab="documents" onclick="switchTab('documents'); toggleSidebar();">
+                    <i data-lucide="file-text" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Documents</span>
+                </button>
+                <button class="nav-item w-full text-left" data-tab="announcements" onclick="switchTab('announcements'); toggleSidebar();">
+                    <i data-lucide="bell" style="width: 17px; height: 17px;"></i>
+                    <span class="flex-1">Announcements</span>
+                    <span class="text-xs px-1.5 py-0.5 rounded-full font-bold min-w-[20px] text-center" style="background: hsl(var(--destructive)); color: white;" id="unreadBadge">0</span>
+                </button>
+            </nav>
+
+            <!-- Logout -->
+            <div class="p-3 border-t border-white/10">
+                <button id="logoutBtn" class="nav-item w-full text-left hover:bg-red-500/20" style="color: hsl(0 80% 75%);" onclick="logout()">
+                    <i data-lucide="log-out" style="width: 17px; height: 17px;"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <!-- Top bar -->
+            <header class="flex items-center justify-between px-5 py-3.5 border-b bg-card flex-shrink-0" style="box-shadow: var(--shadow-sm);">
+                <div class="flex items-center gap-3">
+                    <button class="lg:hidden text-muted-foreground hover:text-foreground" onclick="toggleSidebar()">
+                        <i data-lucide="menu" style="width: 22px; height: 22px;"></i>
+                    </button>
+                    <div class="flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <span class="font-medium text-foreground">Vendor Dashboard</span>
+                        <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
+                        <span id="activeTabLabel">Overview</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="relative text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted transition-colors">
+                        <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+                        <span class="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center text-white" style="background: hsl(var(--destructive));">3</span>
+                    </button>
+                    <div class="flex items-center gap-2 pl-3 border-l border-border">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background: hsl(152 50% 40%); color: hsl(142 60% 70%);" id="headerAvatar">S</div>
+                        <div class="hidden sm:block">
+                            <p class="text-sm font-semibold text-foreground leading-tight" id="headerUserName">Sarah Nakato</p>
+                            <p class="text-xs text-muted-foreground">VND001</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page content -->
+            <main class="flex-1 overflow-y-auto p-5 lg:p-6 animate-fade-in">
+                <!-- Tab Content Container -->
+                <div id="tabContent">
+            <!-- Overview Tab -->
+            <div id="overviewTab" class="tab-content active">
+                <div class="space-y-6">
+                    <!-- Welcome Banner -->
+                    <div class="rounded-2xl p-6 text-white relative overflow-hidden hero-gradient">
+                        <div class="relative z-10">
+                            <p class="text-white/70 text-sm mb-1">Welcome back,</p>
+                            <h2 class="text-2xl font-bold" id="welcomeName">Sarah Nakato</h2>
+                            <p class="text-white/80 text-sm mt-1" id="businessInfo">Nakato Fresh Produce · Stall A-12</p>
+                            <div class="flex gap-3 mt-4 flex-wrap">
+                                <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5">
+                                    <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>
+                                    Account Active
+                                </span>
+                                <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5">
+                                    <i data-lucide="map-pin" style="width: 14px; height: 14px;"></i>
+                                    Mbarara City Market
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <div class="stat-card bg-primary/5 border-primary/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-primary" id="activeBookings">2</p>
+                                    <p class="text-sm text-muted-foreground">Active Bookings</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Current period</p>
+                                </div>
+                                <i data-lucide="calendar-days" class="text-primary" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card bg-success/5 border-success/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-success" id="totalPaid">UGX 1.2M</p>
+                                    <p class="text-sm text-muted-foreground">Total Paid</p>
+                                    <p class="text-xs text-muted-foreground mt-1">This year</p>
+                                </div>
+                                <i data-lucide="credit-card" class="text-success" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card bg-info/5 border-info/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-info" id="stallNumber">A-12</p>
+                                    <p class="text-sm text-muted-foreground">Current Stall</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Main Block, Row A</p>
+                                </div>
+                                <i data-lucide="store" class="text-info" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card bg-warning/5 border-warning/20">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-2xl font-bold text-warning" id="unreadAnnouncements">2</p>
+                                    <p class="text-sm text-muted-foreground">New Announcements</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Requires attention</p>
+                                </div>
+                                <i data-lucide="bell" class="text-warning" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Booking -->
+                    <div class="section-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-foreground flex items-center gap-2">
+                                <i data-lucide="calendar-days" class="text-primary" style="width: 18px; height: 18px;"></i>
+                                Current Booking
+                            </h3>
+                            <button class="text-xs text-primary hover:underline font-medium" onclick="switchTab('bookings')">
+                                View All →
+                            </button>
+                        </div>
+                        <div id="currentBooking" class="bg-secondary/50 rounded-xl p-4">
+                            <!-- Current booking will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Payments -->
+                    <div class="section-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-foreground flex items-center gap-2">
+                                <i data-lucide="receipt" class="text-success" style="width: 18px; height: 18px;"></i>
+                                Recent Payments
+                            </h3>
+                            <button class="text-xs text-primary hover:underline font-medium" onclick="switchTab('payments')">
+                                View All →
+                            </button>
+                        </div>
+                        <div id="recentPayments" class="space-y-3">
+                            <!-- Recent payments will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Document Status -->
+                    <div class="section-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-foreground flex items-center gap-2">
+                                <i data-lucide="file-text" class="text-info" style="width: 18px; height: 18px;"></i>
+                                Document Status
+                            </h3>
+                            <button class="text-xs text-primary hover:underline font-medium" onclick="switchTab('documents')">
+                                Manage →
+                            </button>
+                        </div>
+                        <div id="documentStatus" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <!-- Document status will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other tabs will be added here -->
+            <div id="bookingsTab" class="tab-content">
+                <h2 class="page-title">My Bookings</h2>
+                <p>Booking management functionality coming soon...</p>
+            </div>
+
+            <div id="paymentsTab" class="tab-content">
+                <h2 class="page-title">Payment History</h2>
+                <p>Payment history functionality coming soon...</p>
+            </div>
+
+            <div id="documentsTab" class="tab-content">
+                <h2 class="page-title">Documents</h2>
+                <p>Document management functionality coming soon...</p>
+            </div>
+
+            <div id="announcementsTab" class="tab-content">
+                <h2 class="page-title">Announcements</h2>
+                <p>Announcements functionality coming soon...</p>
+            </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Modals -->
+    <div id="modalOverlay" class="modal-overlay hidden">
+        <div id="modalContent" class="modal-content">
+            <!-- Modal content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Sidebar toggle functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Update active tab in sidebar
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // Update header breadcrumb
+            const tabLabels = {
+                'overview': 'Overview',
+                'bookings': 'My Bookings',
+                'payments': 'Payment History',
+                'documents': 'Documents',
+                'announcements': 'Announcements'
+            };
+            document.getElementById('activeTabLabel').textContent = tabLabels[tabName] || tabName;
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+    <script src="../js/vendor.js"></script>
+</body>
+</html>
+</html>

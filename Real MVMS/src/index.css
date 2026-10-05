@@ -1,0 +1,263 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* MVMS Design System — Mbarara City Market, Uganda */
+
+@layer base {
+  :root {
+    /* Brand Colors — Uganda Forest Green & Golden Market */
+    --background: 45 30% 97%;
+    --foreground: 150 40% 8%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 40% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 40% 8%;
+
+    /* Deep Forest Green — primary brand */
+    --primary: 152 60% 25%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 152 45% 35%;
+    --primary-glow: 152 55% 45%;
+
+    /* Golden Market — accent */
+    --accent: 38 90% 50%;
+    --accent-foreground: 150 40% 8%;
+    --accent-light: 38 85% 62%;
+
+    --secondary: 152 20% 92%;
+    --secondary-foreground: 152 60% 20%;
+
+    --muted: 150 15% 93%;
+    --muted-foreground: 150 10% 45%;
+
+    --destructive: 0 84% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 70% 38%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 90% 50%;
+    --warning-foreground: 150 40% 8%;
+
+    --info: 210 80% 50%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 150 15% 88%;
+    --input: 150 15% 88%;
+    --ring: 152 60% 25%;
+
+    --radius: 0.625rem;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(152, 60%, 18%) 0%, hsl(152, 50%, 30%) 50%, hsl(38, 85%, 45%) 100%);
+    --gradient-sidebar: linear-gradient(180deg, hsl(152, 65%, 15%) 0%, hsl(152, 60%, 20%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(0, 0%, 100%) 0%, hsl(152, 20%, 97%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(38, 90%, 48%) 0%, hsl(38, 80%, 58%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px hsl(152 40% 20% / 0.08);
+    --shadow-md: 0 4px 12px hsl(152 40% 20% / 0.12);
+    --shadow-lg: 0 8px 24px hsl(152 40% 20% / 0.15);
+    --shadow-card: 0 2px 8px hsl(152 40% 20% / 0.10);
+
+    /* Sidebar */
+    --sidebar-background: 152 65% 13%;
+    --sidebar-foreground: 150 30% 88%;
+    --sidebar-primary: 38 90% 50%;
+    --sidebar-primary-foreground: 150 40% 8%;
+    --sidebar-accent: 152 50% 20%;
+    --sidebar-accent-foreground: 150 30% 88%;
+    --sidebar-border: 152 40% 20%;
+    --sidebar-ring: 38 90% 50%;
+  }
+
+  .dark {
+    --background: 152 30% 8%;
+    --foreground: 150 20% 92%;
+    --card: 152 25% 11%;
+    --card-foreground: 150 20% 92%;
+    --primary: 152 55% 40%;
+    --primary-foreground: 0 0% 100%;
+    --border: 152 25% 18%;
+    --input: 152 25% 18%;
+    --muted: 152 20% 16%;
+    --muted-foreground: 150 15% 55%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .sidebar-nav {
+    background: var(--gradient-sidebar);
+  }
+
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  .card-elevated {
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .stat-card {
+    @apply rounded-xl p-5 transition-all duration-300 hover:scale-105;
+    box-shadow: var(--shadow-md);
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 text-sm font-medium;
+    color: hsl(var(--sidebar-foreground));
+  }
+
+  .nav-item:hover {
+    background: hsl(var(--sidebar-accent));
+    color: hsl(0 0% 100%);
+  }
+
+  .nav-item.active {
+    background: hsl(var(--sidebar-primary));
+    color: hsl(var(--sidebar-primary-foreground));
+    font-weight: 600;
+  }
+
+  .table-row-hover {
+    @apply hover:bg-secondary/50 transition-colors duration-150;
+  }
+
+  .badge-success {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    background: hsl(var(--success) / 0.15);
+    color: hsl(var(--success));
+    border: 1px solid hsl(var(--success) / 0.3);
+  }
+
+  .badge-warning {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    background: hsl(var(--warning) / 0.15);
+    color: hsl(38 80% 30%);
+    border: 1px solid hsl(var(--warning) / 0.3);
+  }
+
+  .badge-danger {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    background: hsl(var(--destructive) / 0.12);
+    color: hsl(var(--destructive));
+    border: 1px solid hsl(var(--destructive) / 0.3);
+  }
+
+  .badge-info {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    background: hsl(var(--info) / 0.12);
+    color: hsl(var(--info));
+    border: 1px solid hsl(var(--info) / 0.3);
+  }
+
+  .badge-neutral {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    border: 1px solid hsl(var(--border));
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm hover:shadow-md active:scale-95;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+  .btn-primary:hover { background: hsl(var(--primary-light)); }
+
+  .btn-accent {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm hover:shadow-md active:scale-95;
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+  }
+  .btn-accent:hover { background: hsl(var(--accent-light)); }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 border-2 bg-transparent active:scale-95;
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary));
+  }
+  .btn-outline:hover {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm hover:shadow-md active:scale-95;
+    background: hsl(var(--destructive));
+    color: hsl(var(--destructive-foreground));
+  }
+
+  .form-input {
+    @apply w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-all duration-200;
+    background: hsl(0 0% 100%);
+    border-color: hsl(var(--border));
+    color: hsl(var(--foreground));
+  }
+  .form-input:focus {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
+  }
+
+  .form-label {
+    @apply block text-sm font-semibold mb-1.5;
+    color: hsl(var(--foreground));
+  }
+
+  .page-header {
+    @apply flex items-center justify-between mb-6 flex-wrap gap-3;
+  }
+
+  .page-title {
+    @apply text-xl font-bold;
+    color: hsl(var(--foreground));
+  }
+
+  .section-card {
+    @apply bg-card rounded-xl border p-5;
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Print styles */
+  @media print {
+    .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    body { background: white; }
+    .sidebar-nav { display: none !important; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: hsl(var(--muted)); }
+  ::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.4); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.7); }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(152 60% 25% / 0.4); }
+  50% { box-shadow: 0 0 0 8px hsl(152 60% 25% / 0); }
+}
+
+.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+.animate-slide-in { animation: slideIn 0.3s ease-out forwards; }

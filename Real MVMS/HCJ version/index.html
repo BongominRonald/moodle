@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVMS - Mbarara City Market</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts for Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="login-shell">
+        <section class="login-hero">
+            <div class="hero-content">
+                <div class="hero-brand">
+                    <div class="hero-brand-icon"><i data-lucide="store"></i></div>
+                    <div>
+                        <p class="hero-eyebrow">MVMS</p>
+                        <p class="hero-subtitle">Market Vendor Management</p>
+                    </div>
+                </div>
+
+                <div class="hero-copy">
+                    <h1 class="hero-title">Mbarara City</h1>
+                    <h2 class="hero-highlight">Market Management</h2>
+                    <p class="hero-description">A digital platform for managing vendor registration, stall allocation, payments, and compliance for traditional markets in Mbarara City, Uganda.</p>
+                </div>
+
+                <div class="hero-meta">
+                    <i data-lucide="map-pin"></i>
+                    <span>Mbarara City, Uganda</span>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="hero-stat"><span>240+</span><small>Vendors</small></div>
+                    <div class="hero-stat"><span>180</span><small>Stalls</small></div>
+                    <div class="hero-stat"><span>3</span><small>Markets</small></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="login-panel">
+            <div class="login-card">
+                <div class="login-card-header">
+                    <h2 class="login-title">Welcome Back</h2>
+                    <p class="login-subtitle">Sign in to access your market dashboard</p>
+                </div>
+
+                <div class="form-label">Select Your Role</div>
+                <div class="role-grid">
+                    <label class="role-card role-option active" data-role="vendor">
+                        <div class="icon-box vendor"><i data-lucide="user"></i></div>
+                        <div class="content">
+                            <strong>Market Vendor</strong>
+                            <span>Sell & manage stalls</span>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" name="role" value="vendor" checked class="sr-only">
+                            <i data-lucide="radio-button-on" style="width: 18px; height: 18px;"></i>
+                        </div>
+                    </label>
+                    <label class="role-card role-option" data-role="admin">
+                        <div class="icon-box admin"><i data-lucide="shield-check"></i></div>
+                        <div class="content">
+                            <strong>Market Admin</strong>
+                            <span>Manage all operations</span>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" name="role" value="admin" class="sr-only">
+                            <i data-lucide="circle" style="width: 18px; height: 18px;"></i>
+                        </div>
+                    </label>
+                </div>
+
+                <form id="loginForm" class="space-y-5">
+                    <!-- Error Message -->
+                    <div id="errorMessage" class="hidden p-4 rounded-lg bg-destructive/10 border border-destructive/30 flex items-start gap-3">
+                        <i data-lucide="alert-circle" class="flex-shrink-0 mt-0.5" style="width: 18px; height: 18px; color: hsl(var(--destructive));"></i>
+                        <div>
+                            <p class="text-sm font-medium text-destructive">Error</p>
+                            <p id="errorText" class="text-xs text-destructive/80"></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="email" class="form-input" placeholder="Enter vendor email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="password-field">
+                            <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                            <button type="button" id="togglePassword">
+                                <i data-lucide="eye" style="width: 18px; height: 18px;"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="loginBtn" class="login-btn">
+                        <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+                        <span>Sign In</span>
+                    </button>
+                </form>
+
+                <div class="demo-box">
+                    <p class="demo-title">DEMO CREDENTIALS</p>
+                    <div class="demo-data">
+                        <div class="item"><strong>Admin</strong><span>admin@mbararamarket.ug / Admin@123</span></div>
+                        <div class="item"><strong>Vendor</strong><span>vendor@mbararamarket.ug / Vendor@123</span></div>
+                    </div>
+                </div>
+
+                <p class="login-footer">Mbarara City Market Authority — © 2025</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-card rounded-xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-3"></div>
+            <p class="text-muted-foreground text-sm">Signing you in…</p>
+        </div>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+</html>
